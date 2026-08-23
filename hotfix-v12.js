@@ -17,6 +17,41 @@
     return bool(p.promocao,false) && promo>0 && normal>0 && promo<normal && inPromoPeriod(p);
   }
   function effectivePrice(p){return promoActive(p)?Number(p.preco_promocional):Number(p.preco_original??p.preco??0)}
+
+  let promoCorePatched=false;
+  function patchCorePromoCategory(){
+    if(promoCorePatched||typeof window.buildTabs!=='function'||typeof window.renderProducts!=='function'||typeof state==='undefined')return;
+    promoCorePatched=true;
+    const originalBuildTabs=window.buildTabs;
+    const originalRenderProducts=window.renderProducts;
+    window.buildTabs=function(){
+      const wantedPromo=state.category==='Promoções';
+      if(wantedPromo)state.category='Todos';
+      originalBuildTabs();
+      if(wantedPromo)state.category='Promoções';
+      ensurePromoCategoryButton();
+    };
+    window.renderProducts=function(){
+      if(state.category!=='Promoções'){originalRenderProducts();return;}
+      const saved=state.category;state.category='Todos';originalRenderProducts();state.category=saved;
+      const promoNames=new Set((state.products||[]).filter(p=>p.promocao_ativa||promoActive(p)).map(p=>String(p.nome||'')));
+      document.querySelectorAll('.product-card').forEach(card=>{const name=card.querySelector('h3')?.textContent||'';card.style.display=promoNames.has(name)?'':'none'});
+      const grid=document.getElementById('productGrid');if(grid&&!promoNames.size)grid.innerHTML='<p class="empty">Nenhuma promoção ativa no momento.</p>';
+      ensurePromoCategoryButton();setTimeout(decoratePromos,0);
+    };
+  }
+  function ensurePromoCategoryButton(){
+    const tabs=document.getElementById('categoryTabs');if(!tabs||typeof state==='undefined')return;
+    const promos=(state.products||[]).filter(p=>p.promocao_ativa||promoActive(p));
+    let btn=tabs.querySelector('[data-fixed-promo-tab="1"]');
+    if(!promos.length){btn?.remove();if(state.category==='Promoções'){state.category='Todos';window.buildTabs?.();window.renderProducts?.()}return}
+    if(!btn){btn=document.createElement('button');btn.type='button';btn.dataset.fixedPromoTab='1';btn.className='promo-category-tab';tabs.appendChild(btn)}
+    btn.innerHTML=`🔥 Promoções <b>${promos.length}</b>`;
+    btn.classList.toggle('active',state.category==='Promoções');
+    btn.onclick=()=>{state.category='Promoções';window.buildTabs();window.renderProducts();if(typeof window.OPEITICA_PROMO_SYNC==='function')setTimeout(window.OPEITICA_PROMO_SYNC,20)};
+    if(!document.getElementById('fixed-promo-tab-style')){const st=document.createElement('style');st.id='fixed-promo-tab-style';st.textContent='.promo-category-tab{background:linear-gradient(135deg,#ffcf4a,#ffad24)!important;color:#5f1900!important;border-color:#f0a800!important;font-weight:900!important;box-shadow:0 6px 18px rgba(218,137,0,.18)}.promo-category-tab.active{background:linear-gradient(135deg,#b71919,#d52c20)!important;color:#fff!important}.promo-category-tab b{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#fff;color:#a51414;font-size:11px;margin-left:3px}';document.head.appendChild(st)}
+  }
+
   function decoratePromos(){
     document.querySelectorAll('.product-card').forEach(card=>{
       const name=card.querySelector('h3')?.textContent||'';
@@ -69,9 +104,11 @@
       });
       state.products=all.filter(p=>p.ativo);
       try{localStorage.setItem('opeitica:lastProducts',JSON.stringify(state.products));localStorage.setItem('opeitica:lastSync',new Date().toISOString());}catch(e){}
+      patchCorePromoCategory();
       if(typeof syncCartPrices==='function')syncCartPrices();
-      if(typeof buildTabs==='function')buildTabs();
-      if(typeof renderProducts==='function')renderProducts();
+      if(typeof window.buildTabs==='function')window.buildTabs();
+      if(typeof window.renderProducts==='function')window.renderProducts();
+      ensurePromoCategoryButton();
       setTimeout(decoratePromos,0);
       if(typeof window.OPEITICA_PROMO_SYNC==='function')setTimeout(window.OPEITICA_PROMO_SYNC,20);
       if(typeof setSync==='function')setSync('ok','Catálogo atualizado',new Date().toLocaleTimeString('pt-BR'));
@@ -95,12 +132,13 @@
 
   document.addEventListener('DOMContentLoaded',()=>{
     restoreOfficialIcons();
+    patchCorePromoCategory();
 
-    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=26';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=26';l.dataset.clientArea='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=26';s.dataset.clientArea='1';document.body.appendChild(s)}
-    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=26';l.dataset.promocoes='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=26';s.dataset.promocoes='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=27';l.dataset.liveProducts='1';document.head.appendChild(l)}
+    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=27';l.dataset.clientArea='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=27';s.dataset.clientArea='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=27';l.dataset.promocoes='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=27';s.dataset.promocoes='1';document.body.appendChild(s)}
 
     setTimeout(syncCatalog,250);
     setInterval(()=>{if(!document.hidden)syncCatalog()},3000);
