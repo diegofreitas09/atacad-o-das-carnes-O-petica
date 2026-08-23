@@ -99,20 +99,30 @@ function renderProducts(){
   if(!items.length){grid.innerHTML='<p class="empty">Nenhum produto encontrado.</p>';return;}
   items.forEach(p=>{
     const node=$('#productTemplate').content.cloneNode(true);
-    const card=node.querySelector('.product-card');
     node.querySelector('h3').textContent=p.nome;
     node.querySelector('.category-badge').textContent=p.categoria;
     node.querySelector('.description').textContent=p.descricao||'';
     node.querySelector('.price').textContent=money(p.preco);
     node.querySelector('.unit-label').textContent=p.unidade==='kit'?'/ kit':'/ kg';
     const controls=node.querySelector('.weight-controls');
-    let grams=p.unidade==='kit'?1000:1000;
+    let grams=1000;
     if(p.unidade==='kit') controls.style.display='none';
     controls?.querySelectorAll('button[data-weight]').forEach(b=>b.onclick=()=>{
-      grams=Number(b.dataset.weight); controls.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); controls.querySelector('.custom-weight').value='';
+      grams=Number(b.dataset.weight);
+      controls.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      controls.querySelector('.custom-weight').value='';
     });
     const custom=controls?.querySelector('.custom-weight');
-    if(custom) custom.oninput=()=>{if(custom.value){grams=Math.max(1,Number(custom.value));controls.querySelectorAll('button').forEach(x=>x.classList.remove('active'));}};
+    if(custom){
+      custom.title='Digite a quantidade em gramas';
+      custom.oninput=()=>{
+        if(custom.value){
+          grams=Math.max(1,Number(custom.value)||1);
+          controls.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+        }
+      };
+    }
     node.querySelector('.add-btn').onclick=()=>{
       const note=node.querySelector('.note').value.trim();
       const qty=p.unidade==='kit'?1:grams/1000;
@@ -123,14 +133,74 @@ function renderProducts(){
   });
 }
 
-function updateCart(){
+function recalcItem(item){
+  if(item.unidade==='kit'){
+    item.qty=Math.max(1,Math.round(Number(item.qty)||1));
+    item.total=item.preco*item.qty;
+  }else{
+    item.grams=Math.max(1,Number(item.grams)||1);
+    item.qty=item.grams/1000;
+    item.total=item.preco*item.qty;
+  }
+}
+
+function updateFloatingCart(){
+  const fab=$('#cartFab');
+  const subtotal=state.cart.reduce((a,b)=>a+b.total,0);
   $('#cartCount').textContent=state.cart.length;
+  let totalEl=fab.querySelector('.cart-fab-total');
+  if(!totalEl){
+    totalEl=document.createElement('span');
+    totalEl.className='cart-fab-total';
+    fab.insertBefore(totalEl,$('#cartCount'));
+  }
+  totalEl.textContent=state.cart.length?money(subtotal):'R$ 0,00';
+  fab.classList.toggle('has-items',state.cart.length>0);
+}
+
+function updateCart(){
+  updateFloatingCart();
   const wrap=$('#cartItems'); wrap.innerHTML='';
   if(!state.cart.length) wrap.innerHTML='<div class="empty">Sua cesta está vazia.</div>';
   state.cart.forEach(item=>{
     const el=document.createElement('div'); el.className='cart-item';
-    el.innerHTML=`<div><strong>${item.nome}</strong><br><small>${item.unidade==='kit'?'1 kit':`${item.grams}g`} • ${money(item.total)}${item.note?`<br>Obs.: ${escapeHTML(item.note)}`:''}</small></div><button type="button">Remover</button>`;
-    el.querySelector('button').onclick=()=>{state.cart=state.cart.filter(x=>x.key!==item.key);updateCart();}; wrap.appendChild(el);
+    const qtyLabel=item.unidade==='kit'?'Quantidade de kits':'Quantidade em gramas';
+    const qtyValue=item.unidade==='kit'?item.qty:item.grams;
+    const suffix=item.unidade==='kit'?'kit(s)':'g';
+    el.innerHTML=`
+      <div class="cart-item-main">
+        <strong>${escapeHTML(item.nome)}</strong>
+        <small>${money(item.preco)} ${item.unidade==='kit'?'/ kit':'/ kg'}</small>
+        <label class="cart-qty-label">${qtyLabel}
+          <div class="cart-qty-control">
+            <button type="button" class="qty-minus" aria-label="Diminuir quantidade">−</button>
+            <input class="cart-qty-input" type="number" min="1" step="${item.unidade==='kit'?'1':'10'}" value="${qtyValue}" inputmode="numeric" />
+            <span>${suffix}</span>
+            <button type="button" class="qty-plus" aria-label="Aumentar quantidade">+</button>
+          </div>
+        </label>
+        <strong class="cart-item-total">${money(item.total)}</strong>
+        ${item.note?`<small>Obs.: ${escapeHTML(item.note)}</small>`:''}
+      </div>
+      <button type="button" class="remove-item">Remover</button>`;
+
+    const input=el.querySelector('.cart-qty-input');
+    const changeQty=(value)=>{
+      const normalized=Math.max(1,Number(value)||1);
+      if(item.unidade==='kit') item.qty=Math.round(normalized);
+      else item.grams=normalized;
+      recalcItem(item);
+      input.value=item.unidade==='kit'?item.qty:item.grams;
+      el.querySelector('.cart-item-total').textContent=money(item.total);
+      updateFloatingCart();
+      updateTotals();
+    };
+    input.oninput=()=>changeQty(input.value);
+    input.onchange=()=>changeQty(input.value);
+    el.querySelector('.qty-minus').onclick=()=>changeQty(Number(input.value)-(item.unidade==='kit'?1:50));
+    el.querySelector('.qty-plus').onclick=()=>changeQty(Number(input.value)+(item.unidade==='kit'?1:50));
+    el.querySelector('.remove-item').onclick=()=>{state.cart=state.cart.filter(x=>x.key!==item.key);updateCart();};
+    wrap.appendChild(el);
   });
   updateTotals();
 }
@@ -152,7 +222,11 @@ function buildOrderText(){
   if(!state.cart.length) return '';
   const type=fulfillment(); const subtotal=state.cart.reduce((a,b)=>a+b.total,0); const delivery=type==='entrega'?Number(cfg.DELIVERY_FEE||0):0;
   const lines=[`*PEDIDO - ${cfg.BUSINESS_NAME}*`,''];
-  state.cart.forEach((i,n)=>{lines.push(`${n+1}. *${i.nome}*`,`Quantidade: ${i.unidade==='kit'?'1 kit':`${i.grams}g`}`,`Valor: ${money(i.total)}`);if(i.note)lines.push(`Obs.: ${i.note}`);lines.push('');});
+  state.cart.forEach((i,n)=>{
+    lines.push(`${n+1}. *${i.nome}*`,`Quantidade: ${i.unidade==='kit'?`${i.qty} kit(s)`:`${i.grams}g`}`,`Valor: ${money(i.total)}`);
+    if(i.note)lines.push(`Obs.: ${i.note}`);
+    lines.push('');
+  });
   lines.push(`*Produtos:* ${money(subtotal)}`,`*Forma:* ${type==='entrega'?'ENTREGA':'RETIRADA'}`);
   if(type==='entrega'){
     const name=$('#customerName').value.trim(),phone=$('#customerPhone').value.trim(),addr=$('#customerAddress').value.trim(),ref=$('#customerReference').value.trim();
@@ -163,7 +237,8 @@ function buildOrderText(){
 
 $('#refreshBtn').onclick=()=>loadProducts({manual:true});
 $('#searchInput').oninput=e=>{state.query=e.target.value;renderProducts();};
-$('#cartFab').onclick=openCart; document.querySelectorAll('[data-close-cart]').forEach(x=>x.onclick=closeCart);
+$('#cartFab').onclick=openCart;
+document.querySelectorAll('[data-close-cart]').forEach(x=>x.onclick=closeCart);
 document.querySelectorAll('input[name="fulfillment"]').forEach(x=>x.onchange=updateTotals);
 $('#sendBtn').onclick=()=>{const text=buildOrderText();if(!text)return alert('Adicione produtos à cesta.');window.open(`https://wa.me/${cfg.WHATSAPP}?text=${encodeURIComponent(text)}`,'_blank','noopener');};
 $('#pdfBtn').onclick=()=>{if(!state.cart.length)return alert('Adicione produtos à cesta.');window.print();};
