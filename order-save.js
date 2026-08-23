@@ -4,7 +4,18 @@
   let currentSignature='';
 
   function makeOrderId(){return 'OP-'+new Date().toISOString().replace(/\D/g,'').slice(0,14)+'-'+Math.floor(Math.random()*900+100);}
-  function signature(){return JSON.stringify({cart:state.cart.map(i=>[i.id,i.grams,i.qty,i.note,i.total]),customer:customerData(),location:mapsClientLink()});}
+  function deliveryMapLinkFromCustomer(c){
+    if(typeof mapsClientLink==='function'){
+      const gps=mapsClientLink();
+      if(gps)return gps;
+    }
+    if(c?.type==='entrega'&&c.address){
+      const query=[c.address,c.area?.name,'Fortaleza','CE'].filter(Boolean).join(', ');
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+    return '';
+  }
+  function signature(){const c=customerData();return JSON.stringify({cart:state.cart.map(i=>[i.id,i.grams,i.qty,i.note,i.total]),customer:c,location:deliveryMapLinkFromCustomer(c)});}
   function budgetId(){const s=signature();if(!currentId||s!==currentSignature){currentId=makeOrderId();currentSignature=s;}return currentId;}
   function getPayload(){
     const c=customerData(),delivery=c.type==='entrega'?c.area.fee:0;
@@ -12,7 +23,7 @@
       id:budgetId(),criado_em:new Date().toISOString(),cliente:c.name,telefone:c.phone,
       recebimento:c.type,bairro:c.type==='entrega'?c.area.name:'',taxa_entrega:delivery,
       endereco:c.type==='entrega'?c.address:'',referencia:c.type==='entrega'?c.reference:'',
-      localizacao:mapsClientLink(),subtotal:cartSubtotal(),total:cartSubtotal()+delivery,
+      localizacao:deliveryMapLinkFromCustomer(c),subtotal:cartSubtotal(),total:cartSubtotal()+delivery,
       itens:state.cart.map(i=>({id:i.id,nome:i.nome,categoria:i.categoria||'',quantidade:i.unidade==='kit'?i.qty:i.grams,unidade:i.unidade==='kit'?'kit':'g',preco_unitario:i.preco,subtotal:i.total,observacao:i.note||''}))
     };
   }
@@ -26,9 +37,9 @@
     payload.itens.forEach((i,n)=>{lines.push(`${n+1}. *${i.nome}*`,`Quantidade: ${i.unidade==='kit'?i.quantidade+' kit(s)':i.quantidade+' g'}`,`Valor: ${money(i.subtotal)}`);if(i.observacao)lines.push(`Obs.: ${i.observacao}`);lines.push('');});
     lines.push(`Produtos: ${money(payload.subtotal)}`,`Recebimento: ${payload.recebimento==='entrega'?'ENTREGA':'RETIRADA NA LOJA'}`);
     if(payload.recebimento==='entrega'){
-      lines.push(`Bairro: ${payload.bairro}`,`Taxa de entrega: ${money(payload.taxa_entrega)}`,`Endereço: ${payload.endereco}`);
+      lines.push(`Bairro: ${payload.bairro}`,`Taxa de entrega: ${money(payload.taxa_entrega)}`,`Endereço completo: ${payload.endereco}`);
       if(payload.referencia)lines.push(`Referência: ${payload.referencia}`);
-      if(payload.localizacao)lines.push(`📍 Localização para entrega: ${payload.localizacao}`);
+      if(payload.localizacao)lines.push(`📍 *ABRIR ROTA DA ENTREGA:* ${payload.localizacao}`);
     }
     lines.push(`*TOTAL: ${money(payload.total)}*`);
     return lines.join('\n');
@@ -43,41 +54,56 @@
     doc.setTextColor(25,22,20);let y=46;doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(`ORÇAMENTO ${payload.id}`,14,y);y+=7;
     doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text(`Cliente: ${payload.cliente}`,14,y);y+=6;doc.text(`Telefone: ${payload.telefone}`,14,y);y+=6;doc.text(`Recebimento: ${payload.recebimento==='entrega'?'Entrega':'Retirada na loja'}`,14,y);y+=6;
     if(payload.recebimento==='entrega'){
-      doc.text(`Bairro: ${payload.bairro} | Taxa: ${money(payload.taxa_entrega)}`,14,y);y+=6;doc.text(`Endereço: ${payload.endereco}`,14,y,{maxWidth:180});y+=8;
-      if(payload.referencia){doc.text(`Referência: ${payload.referencia}`,14,y,{maxWidth:180});y+=7;}
-      if(payload.localizacao){doc.setTextColor(159,16,16);doc.textWithLink('ABRIR LOCALIZAÇÃO DA ENTREGA',14,y,{url:payload.localizacao});doc.setTextColor(25,22,20);y+=9;}
+      doc.text(`Bairro: ${payload.bairro} | Taxa: ${money(payload.taxa_entrega)}`,14,y);y+=6;
+      const enderecoLinhas=doc.splitTextToSize(`Endereço: ${payload.endereco}`,180);doc.text(enderecoLinhas,14,y);y+=enderecoLinhas.length*5+3;
+      if(payload.referencia){const refLinhas=doc.splitTextToSize(`Referência: ${payload.referencia}`,180);doc.text(refLinhas,14,y);y+=refLinhas.length*5+2;}
+      if(payload.localizacao){doc.setFillColor(245,236,234);doc.roundedRect(14,y-4,182,10,2,2,'F');doc.setTextColor(159,16,16);doc.setFont('helvetica','bold');doc.textWithLink('CLIQUE AQUI PARA ABRIR A ROTA DA ENTREGA NO MAPA',18,y+2,{url:payload.localizacao});doc.setFont('helvetica','normal');doc.setTextColor(25,22,20);y+=13;}
     }
     doc.setDrawColor(220);doc.line(14,y,196,y);y+=8;doc.setFont('helvetica','bold');doc.text('ITENS DO ORÇAMENTO',14,y);y+=7;
     payload.itens.forEach((i,n)=>{if(y>258){doc.addPage();y=20;}doc.setFont('helvetica','bold');doc.text(`${n+1}. ${i.nome}`,14,y,{maxWidth:105});doc.setFont('helvetica','normal');doc.text(i.unidade==='kit'?`${i.quantidade} kit(s)`:`${i.quantidade} g`,134,y);doc.text(money(i.subtotal),196,y,{align:'right'});y+=5;doc.setTextColor(95);doc.text(`${i.categoria||''} • ${money(i.preco_unitario)} ${i.unidade==='kit'?'/ kit':'/ kg'}`,18,y);y+=5;if(i.observacao){doc.text(`Obs.: ${i.observacao}`,18,y,{maxWidth:170});y+=6;}doc.setTextColor(25,22,20);});
     y+=4;if(y>268){doc.addPage();y=20;}doc.line(14,y,196,y);y+=8;doc.text(`Produtos: ${money(payload.subtotal)}`,196,y,{align:'right'});y+=6;if(payload.recebimento==='entrega'){doc.text(`Entrega: ${money(payload.taxa_entrega)}`,196,y,{align:'right'});y+=6;}doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(159,16,16);doc.text(`TOTAL: ${money(payload.total)}`,196,y,{align:'right'});
     return doc.output('blob');
   }
-  function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1800);}
+  function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);}
 
   async function finalizeBudget(){
     if(!validateOrder())return;
     const btn=document.getElementById('finalizeBudgetBtn'),old=btn?.textContent;
-    if(btn){btn.disabled=true;btn.textContent='⏳ Preparando seu orçamento...';}
-    const payload=getPayload();saveLocal(payload);
-    await saveToSheet(payload);
-    const text=whatsappText(payload),blob=makeBrandedPdf(payload),filename=`orcamento-${payload.id}.pdf`;
+    if(btn){btn.disabled=true;btn.textContent='⏳ Salvando e preparando...';}
+
+    /* Abre a aba do WhatsApp imediatamente para evitar bloqueio de pop-up após operações assíncronas. */
+    let whatsappWindow=null;
+    try{whatsappWindow=window.open('about:blank','_blank');}catch(e){}
+
+    const payload=getPayload();
+    saveLocal(payload);
+    const sheetResult=await saveToSheet(payload);
+    const text=whatsappText(payload);
+    const direct=`https://wa.me/${cfg.WHATSAPP||'5585989626829'}?text=${encodeURIComponent(text)}`;
+    const blob=makeBrandedPdf(payload);
+    const filename=`orcamento-${payload.id}.pdf`;
+
     try{
       if(blob){
         const file=new File([blob],filename,{type:'application/pdf'});
         if(navigator.canShare?.({files:[file]})){
+          if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.close();
           await navigator.share({title:`Orçamento ${payload.id} - O Peitica`,text,files:[file]});
-          return;
+        }else{
+          downloadBlob(blob,filename);
+          if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.location.href=direct;else window.location.href=direct;
         }
-        downloadBlob(blob,filename);
+      }else{
+        if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.location.href=direct;else window.location.href=direct;
       }
-      const direct=`https://wa.me/${cfg.WHATSAPP||'5585989626829'}?text=${encodeURIComponent(text)}`;
-      window.open(direct,'_blank','noopener');
+      if(!sheetResult.ok&&sheetResult.offline){console.info('Google Sheets ainda não conectado: orçamento salvo localmente.');}
     }catch(e){
       if(e?.name!=='AbortError'){
-        const direct=`https://wa.me/${cfg.WHATSAPP||'5585989626829'}?text=${encodeURIComponent(text)}`;
-        window.open(direct,'_blank','noopener');
+        if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.location.href=direct;else window.location.href=direct;
       }
-    }finally{if(btn){btn.disabled=false;btn.textContent=old;}}
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old;}
+    }
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
