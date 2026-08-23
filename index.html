@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="manifest" href="manifest.webmanifest?v=11" />
-  <link rel="stylesheet" href="styles.css?v=11" />
-  <link rel="stylesheet" href="custom-v10.css?v=11" />
+  <link rel="manifest" href="manifest.webmanifest?v=12" />
+  <link rel="stylesheet" href="styles.css?v=12" />
+  <link rel="stylesheet" href="custom-v10.css?v=12" />
   <title>O Peitica | Açougue & Delivery</title>
 </head>
 <body>
@@ -25,7 +25,7 @@
     <div class="store-pills"><span>🏪 Retirada grátis</span><span>🛵 Entrega por bairro</span><span>⚖️ Peso editável</span><span>📄 Orçamento completo</span></div>
     <div class="sync-line"><span id="syncDot" class="dot"></span><div><strong id="syncLabel">Carregando preços...</strong><small id="syncTime">Aguarde um instante</small></div></div>
   </section>
-  <section class="quick-links"><a id="whatsappTop" class="quick-link whatsapp" target="_blank" rel="noopener">💬 WhatsApp</a><a id="mapsLink" class="quick-link" target="_blank" rel="noopener">📍 Como chegar</a><a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">◎ Instagram</a></section>
+  <section class="quick-links"><a id="whatsappTop" class="quick-link whatsapp" target="_blank" rel="noopener">WhatsApp</a><a id="mapsLink" class="quick-link" target="_blank" rel="noopener">Como chegar</a><a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">Instagram</a></section>
   <section class="delivery-preview"><div><strong>Como você quer receber?</strong><small>Escolha agora ou altere depois na cesta.</small></div><div class="delivery-preview-actions"><button type="button" class="preview-choice active" data-preview-fulfillment="retirada">🏪 Retirar</button><button type="button" class="preview-choice" data-preview-fulfillment="entrega">🛵 Entrega</button></div></section>
   <section class="catalog-toolbar"><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar carne, corte ou kit..." autocomplete="off" /></div><div id="categoryTabs" class="tabs"></div></section>
   <section class="section-head"><div><span>CATÁLOGO</span><h2>Escolha seus produtos</h2></div><small>Preço por kg ou kit</small></section>
@@ -50,8 +50,8 @@
       <div id="deliveryFields" class="delivery-fields is-hidden"><label>Bairro<select id="deliveryArea"><option value="">Selecione o bairro da entrega *</option></select></label><label>Endereço<input id="customerAddress" placeholder="Rua, número e complemento *" autocomplete="street-address" /></label><label>Referência<input id="customerReference" placeholder="Ponto de referência (opcional)" /></label><button id="locationBtn" type="button" class="location-btn">📍 Adicionar minha localização</button><small id="locationStatus" class="location-status">A localização vai junto no orçamento para ajudar o entregador.</small></div>
     </section>
     <div class="totals"><div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div><div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div><div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div></div>
-    <div class="checkout-actions single-action"><button id="finalizeBudgetBtn" type="button" class="btn primary finalize-budget">✅ SALVAR E ENCAMINHAR ORÇAMENTO</button></div>
-    <p class="checkout-note">O orçamento inclui cliente, todos os itens, endereço e um link clicável para abrir a rota da entrega no Google Maps.</p>
+    <div class="checkout-actions single-action"><button id="finalizeBudgetBtn" type="button" class="btn primary finalize-budget">📄 GERAR PDF, SALVAR E ENCAMINHAR</button></div>
+    <p class="checkout-note">O PDF é gerado obrigatoriamente para impressão e inclui cliente, itens, endereço completo e link clicável da rota da entrega.</p>
   </section>
 </div>
 <template id="productTemplate">
@@ -59,8 +59,8 @@
 </template>
 <footer class="footer"><p><strong>Atacadão da Carne O Peitica</strong> • Rua Edison Martins, 530 • Fortaleza/CE</p><p>🥩 Qualidade no corte • 🛵 Entrega por bairro • 💬 Atendimento pelo WhatsApp</p></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="logo-data.js?v=11"></script>
+<script src="logo-data.js?v=12"></script>
 <script>if(window.OPEITICA_LOGO_DATA){var logo=document.getElementById('brandLogo');if(logo)logo.src=window.OPEITICA_LOGO_DATA;}</script>
-<script src="config.js?v=11"></script><script src="data.js?v=11"></script><script src="app.js?v=11"></script><script src="order-save.js?v=11"></script>
+<script src="config.js?v=12"></script><script src="data.js?v=12"></script><script src="hotfix-v12.js?v=12"></script><script src="app.js?v=12"></script><script src="order-save.js?v=12"></script>
 </body>
 </html>
