@@ -81,16 +81,26 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{
-    const wa=document.getElementById('whatsappTop');if(wa)wa.innerHTML='<span>🟢</span><span>WhatsApp</span>';
-    const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span>📍</span><span>Como chegar</span>';
-    const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span>📷</span><span>Instagram</span>';
+  const ICONS={
+    whatsapp:`<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#25D366"/><path fill="#fff" d="M23.2 18.8c-.4-.2-2.3-1.1-2.7-1.2-.4-.1-.6-.2-.9.2-.3.4-1 1.2-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.5-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.2.3-.4.4-.6.1-.2.1-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.8-.7-.7-.9-.7h-.8c-.3 0-.7.1-1 .5-.4.4-1.4 1.4-1.4 3.4s1.5 4 1.7 4.3c.2.3 2.9 4.4 7 6.1 1 .4 1.8.7 2.4.9 1 .3 1.9.3 2.6.2.8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5z"/></svg>`,
+    instagram:`<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="igG" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#FFD600"/><stop offset=".35" stop-color="#FF7A00"/><stop offset=".62" stop-color="#FF0169"/><stop offset="1" stop-color="#D300C5"/></linearGradient></defs><rect x="2" y="2" width="28" height="28" rx="8" fill="url(#igG)"/><circle cx="16" cy="16" r="6.3" fill="none" stroke="#fff" stroke-width="2.3"/><circle cx="23.5" cy="8.8" r="1.8" fill="#fff"/><rect x="6.8" y="6.8" width="18.4" height="18.4" rx="5.5" fill="none" stroke="#fff" stroke-width="2.1"/></svg>`,
+    maps:`<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#34A853" d="M16 1.5A10.5 10.5 0 0 0 5.5 12c0 7.9 10.5 18.5 10.5 18.5S26.5 19.9 26.5 12A10.5 10.5 0 0 0 16 1.5z"/><path fill="#4285F4" d="M16 1.5A10.5 10.5 0 0 0 5.5 12c0 2.5 1.1 5.4 2.6 8.2L16 12V1.5z"/><path fill="#FBBC04" d="M16 12l-7.9 8.2c2.8 5 7.9 10.3 7.9 10.3V12z"/><path fill="#EA4335" d="M16 1.5V12h10.5A10.5 10.5 0 0 0 16 1.5z"/><circle cx="16" cy="12" r="4.2" fill="#fff"/></svg>`
+  };
+  function restoreOfficialIcons(){
+    const wa=document.getElementById('whatsappTop');if(wa)wa.innerHTML=`<span class="brand-social-icon">${ICONS.whatsapp}</span><span>WhatsApp</span>`;
+    const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML=`<span class="brand-social-icon">${ICONS.maps}</span><span>Como chegar</span>`;
+    const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML=`<span class="brand-social-icon">${ICONS.instagram}</span><span>Instagram</span>`;
+    if(!document.getElementById('official-icon-style')){const st=document.createElement('style');st.id='official-icon-style';st.textContent='.brand-social-icon{width:26px;height:26px;display:inline-grid;place-items:center;flex:0 0 26px}.brand-social-icon svg{display:block;width:26px;height:26px}.quick-link{display:flex!important;align-items:center;justify-content:center;gap:9px}';document.head.appendChild(st)}
+  }
 
-    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=25';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=25';l.dataset.clientArea='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=25';s.dataset.clientArea='1';document.body.appendChild(s)}
-    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=25';l.dataset.promocoes='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=25';s.dataset.promocoes='1';document.body.appendChild(s)}
+  document.addEventListener('DOMContentLoaded',()=>{
+    restoreOfficialIcons();
+
+    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=26';l.dataset.liveProducts='1';document.head.appendChild(l)}
+    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=26';l.dataset.clientArea='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=26';s.dataset.clientArea='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=26';l.dataset.promocoes='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=26';s.dataset.promocoes='1';document.body.appendChild(s)}
 
     setTimeout(syncCatalog,250);
     setInterval(()=>{if(!document.hidden)syncCatalog()},3000);
