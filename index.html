@@ -86,5 +86,12 @@
   <script src="config.js?v=4"></script>
   <script src="data.js?v=4"></script>
   <script src="app.js?v=4"></script>
+  <script>
+    // O botão de contato rápido usa o link oficial do WhatsApp Business.
+    if (window.APP_CONFIG?.WHATSAPP_BUSINESS_URL) {
+      const quickWhats = document.getElementById('whatsappTop');
+      if (quickWhats) quickWhats.href = window.APP_CONFIG.WHATSAPP_BUSINESS_URL;
+    }
+  </script>
 </body>
 </html>
