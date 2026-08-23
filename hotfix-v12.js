@@ -9,16 +9,13 @@
     return !['false','0','não','nao','inativo','off','indisponível','indisponivel'].includes(String(v).trim().toLowerCase());
   }
   function promoActive(p){
-    if(!bool(p.promocao,false)||!Number(p.preco_promocional||0)) return false;
-    const now=new Date();
-    const a=p.promo_inicio?new Date(p.promo_inicio):null;
-    const b=p.promo_fim?new Date(p.promo_fim):null;
-    return (!a||isNaN(a)||now>=a)&&(!b||isNaN(b)||now<=b);
+    return bool(p.promocao,false) && Number(p.preco_promocional||0)>0;
   }
   function decoratePromos(){
     document.querySelectorAll('.product-card').forEach(card=>{
       const name=card.querySelector('h3')?.textContent||'';
-      const p=window.state?.products?.find?.(x=>x.nome===name)||state?.products?.find?.(x=>x.nome===name);
+      const source=(typeof state!=='undefined'&&state.products)||[];
+      const p=source.find(x=>x.nome===name);
       if(!p||!p.promocao_ativa)return;
       card.classList.add('is-promo');
       const media=card.querySelector('.product-media');
@@ -26,9 +23,14 @@
         const b=document.createElement('span');b.className='promo-live-badge';b.textContent='🔥 OFERTA DO DIA';media.appendChild(b);
       }
       const row=card.querySelector('.price-row'),price=card.querySelector('.price');
-      if(row&&price&&!row.querySelector('.old-price')){
-        const old=document.createElement('del');old.className='old-price';old.textContent=money(p.preco_original);row.insertBefore(old,price);
+      if(row&&price){
+        price.textContent=money(p.preco_promocional);
+        if(!row.querySelector('.old-price')){
+          const old=document.createElement('del');old.className='old-price';old.textContent=money(p.preco_original);row.insertBefore(old,price);
+        }
       }
+      const calc=card.querySelector('.live-calc strong');
+      if(calc) calc.textContent=money(p.preco_promocional);
     });
   }
   async function syncCatalog(){
@@ -60,7 +62,7 @@
       if(typeof syncCartPrices==='function')syncCartPrices();
       if(typeof buildTabs==='function')buildTabs();
       if(typeof renderProducts==='function')renderProducts();
-      decoratePromos();
+      setTimeout(decoratePromos,0);
       if(typeof setSync==='function')setSync('ok','Catálogo atualizado',new Date().toLocaleTimeString('pt-BR'));
     }catch(e){
       console.warn('[O Peitica Gestão → Cliente]',e);
@@ -73,11 +75,11 @@
     const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span>📍</span><span>Como chegar</span>';
     const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span>📷</span><span>Instagram</span>';
 
-    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=22';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=22';l.dataset.clientArea='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=22';s.dataset.clientArea='1';document.body.appendChild(s)}
-    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=22';l.dataset.promocoes='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=22';s.dataset.promocoes='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=23';l.dataset.liveProducts='1';document.head.appendChild(l)}
+    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=23';l.dataset.clientArea='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=23';s.dataset.clientArea='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=23';l.dataset.promocoes='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=23';s.dataset.promocoes='1';document.body.appendChild(s)}
 
     setTimeout(syncCatalog,250);
     setInterval(()=>{if(!document.hidden)syncCatalog()},3000);
