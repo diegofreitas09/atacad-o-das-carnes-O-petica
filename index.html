@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#b00000" />
+  <meta name="description" content="Catálogo e pedidos do Atacadão da Carne O Peitica" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>O Peitica | Catálogo</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-label="O Peitica">
+      <div class="brand-ring">ATACADÃO DA CARNE</div>
+      <div class="brand-cow">🐂</div>
+      <div class="brand-ribbon">O PEITICA</div>
+    </div>
+    <div class="brand-copy">
+      <strong>Atacadão da Carne O Peitica</strong>
+      <span>Preço atualizado. Pedido fácil.</span>
+    </div>
+    <button id="refreshBtn" class="icon-btn" type="button" title="Atualizar preços">↻</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">CATÁLOGO ONLINE</span>
+        <h1>Escolha, pese e peça pelo WhatsApp.</h1>
+        <p>Os preços são atualizados pela planilha. Ao abrir o app, buscamos os valores mais recentes.</p>
+      </div>
+      <div class="status-card">
+        <span id="syncDot" class="dot"></span>
+        <div>
+          <strong id="syncLabel">Carregando preços...</strong>
+          <small id="syncTime">Aguarde um instante</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-links">
+      <a id="mapsLink" class="quick-link" target="_blank" rel="noopener">📍 Localização</a>
+      <a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">◎ Instagram</a>
+      <a id="whatsappTop" class="quick-link" target="_blank" rel="noopener">💬 WhatsApp</a>
+    </section>
+
+    <section class="address-line">
+      <strong>📍 Rua Edison Martins, 530</strong>
+      <span>Fortaleza - CE</span>
+    </section>
+
+    <section class="catalog-toolbar">
+      <div class="search-wrap">
+        <input id="searchInput" type="search" placeholder="Buscar carne ou kit..." autocomplete="off" />
+      </div>
+      <div id="categoryTabs" class="tabs"></div>
+    </section>
+
+    <section id="productGrid" class="product-grid" aria-live="polite"></section>
+  </main>
+
+  <button id="cartFab" class="cart-fab" type="button">
+    <span>🛒</span>
+    <strong>Minha cesta</strong>
+    <b id="cartCount">0</b>
+  </button>
+
+  <div id="cartSheet" class="sheet" aria-hidden="true">
+    <div class="sheet-backdrop" data-close-cart></div>
+    <section class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div><small>SEU PEDIDO</small><h2>Minha cesta</h2></div>
+        <button type="button" class="close-btn" data-close-cart>×</button>
+      </div>
+      <div id="cartItems" class="cart-items"></div>
+
+      <div class="fulfillment">
+        <label><input type="radio" name="fulfillment" value="retirada" checked /> Vou buscar</label>
+        <label><input type="radio" name="fulfillment" value="entrega" /> Quero entrega</label>
+      </div>
+
+      <div id="deliveryFields" class="delivery-fields is-hidden">
+        <input id="customerName" placeholder="Nome do cliente" />
+        <input id="customerPhone" placeholder="Telefone" inputmode="tel" />
+        <input id="customerAddress" placeholder="Endereço para entrega" />
+        <input id="customerReference" placeholder="Ponto de referência (opcional)" />
+      </div>
+
+      <div class="totals">
+        <div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div>
+        <div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div>
+        <div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div>
+      </div>
+
+      <div class="checkout-actions">
+        <button id="pdfBtn" type="button" class="btn secondary">Salvar pedido em PDF</button>
+        <button id="sendBtn" type="button" class="btn primary">Enviar no WhatsApp</button>
+      </div>
+    </section>
+  </div>
+
+  <template id="productTemplate">
+    <article class="product-card">
+      <div class="product-media"><span class="product-emoji">🥩</span><span class="category-badge"></span></div>
+      <div class="product-body">
+        <h3></h3>
+        <p class="description"></p>
+        <div class="price-row"><strong class="price"></strong><small class="unit-label"></small></div>
+        <div class="weight-controls">
+          <button type="button" data-weight="250">250g</button>
+          <button type="button" data-weight="500">500g</button>
+          <button type="button" data-weight="1000" class="active">1kg</button>
+          <input class="custom-weight" type="number" min="1" step="1" placeholder="g" />
+        </div>
+        <textarea class="note" rows="2" placeholder="Observação: corte, embalagem, preferência..."></textarea>
+        <button class="add-btn" type="button">Adicionar à cesta</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
