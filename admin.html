@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#991010">
+<title>Painel O Peitica</title><link rel="stylesheet" href="admin.css"><script src="data.js"></script><script src="config.js"></script></head>
+<body>
+<header class="admin-top"><div><strong>O PEITICA • PAINEL DE COMANDO</strong><span>Preços, pedidos e relatório de vendas</span></div><a href="./" target="_blank">Abrir app do cliente</a></header>
+<main>
+<section class="login-card" id="loginCard"><h1>Acesso administrativo</h1><p>Digite o PIN configurado no Google Apps Script.</p><div class="login-row"><input id="pin" type="password" placeholder="PIN administrativo"><button id="enterBtn">Entrar</button></div><small id="loginMsg"></small></section>
+<div id="panel" hidden>
+<section class="toolbar"><div><h1>Painel de comando</h1><p>Alterações de preço publicadas aqui aparecem no app do cliente na próxima sincronização.</p></div><div class="toolbar-actions"><button id="syncBtn">↻ Atualizar painel</button><button id="publishSeedsBtn">Enviar catálogo inicial</button></div></section>
+<nav class="admin-tabs"><button class="active" data-tab="prices">Produtos e preços</button><button data-tab="sales">Vendas</button><button data-tab="orders">Pedidos</button></nav>
+<section id="tab-prices" class="tab-panel active"><div class="section-title"><div><h2>Produtos e preços</h2><p>Edite preço, nome, categoria, disponibilidade e imagem.</p></div><input id="productSearch" placeholder="Buscar produto..."></div><div id="productsTable" class="table-wrap"></div></section>
+<section id="tab-sales" class="tab-panel"><div class="filters"><label>De <input id="fromDate" type="date"></label><label>Até <input id="toDate" type="date"></label><button id="reportBtn">Gerar relatório</button></div><div id="kpis" class="kpi-grid"></div><div class="report-grid"><article><h3>Produtos mais vendidos</h3><div id="topProducts"></div></article><article><h3>Faturamento por bairro</h3><div id="neighborhoods"></div></article></div></section>
+<section id="tab-orders" class="tab-panel"><div class="section-title"><div><h2>Pedidos recebidos pelo app</h2><p>Controle separação, entrega e conclusão.</p></div></div><div id="ordersTable" class="table-wrap"></div></section>
+</div>
+</main>
+<script src="admin.js"></script></body></html>
