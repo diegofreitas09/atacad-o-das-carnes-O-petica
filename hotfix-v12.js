@@ -1,4 +1,4 @@
-/* Hotfix: cesta nova ao entrar, ícones oficiais, preços ao vivo e área do cliente. */
+/* Hotfix: cesta nova ao entrar, ícones oficiais, sincronização direta e área do cliente. */
 (function(){
   const CART_KEY='opeitica:carrinho-v1';
   try{localStorage.removeItem(CART_KEY);sessionStorage.removeItem(CART_KEY);}catch(e){}
@@ -7,7 +7,7 @@
     const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span class="brand-social-icon maps-brand" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M12 2C8.1 2 5 5 5 8.8c0 5.1 7 13.2 7 13.2s7-8.1 7-13.2C19 5 15.9 2 12 2z"/><circle cx="12" cy="8.8" r="2.8" fill="#fff"/><path fill="#34A853" d="M12 22s7-8.1 7-13.2c0-.8-.1-1.5-.4-2.2L12 22z"/><path fill="#FBBC04" d="M5.4 6.5A6.8 6.8 0 0 0 5 8.8c0 2.1 1.2 4.8 2.7 7.2L12 10.5 5.4 6.5z"/><path fill="#EA4335" d="M12 2C9 2 6.5 3.8 5.4 6.5l4.3 3A2.8 2.8 0 0 1 12 6V2z"/></svg></span><span>Como chegar</span>';
     const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span class="brand-social-icon instagram-brand" aria-hidden="true"><svg viewBox="0 0 24 24"><defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFDC80"/><stop offset=".35" stop-color="#FC3768"/><stop offset=".7" stop-color="#C13584"/><stop offset="1" stop-color="#405DE6"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#fff"/></svg></span><span>Instagram</span>';
     if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=20';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-live-products]')){const s=document.createElement('script');s.src='live-products.js?v=20';s.dataset.liveProducts='1';document.body.appendChild(s)}
+    if(!document.querySelector('script[data-sync-v20]')){const s=document.createElement('script');s.src='sync-v20.js?v=20';s.dataset.syncV20='1';document.body.appendChild(s)}
     if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=20';l.dataset.clientArea='1';document.head.appendChild(l)}
     if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=20';s.dataset.clientArea='1';document.body.appendChild(s)}
     if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update())).catch(()=>{});}
