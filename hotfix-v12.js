@@ -1,15 +1,89 @@
-/* Hotfix: cesta nova ao entrar, ícones oficiais, sincronização direta e área do cliente. */
+/* Hotfix cliente: sincronização direta com O Peitica Gestão. */
 (function(){
   const CART_KEY='opeitica:carrinho-v1';
   try{localStorage.removeItem(CART_KEY);sessionStorage.removeItem(CART_KEY);}catch(e){}
+
+  function bool(v,def=true){
+    if(v===null||v===undefined||v==='') return def;
+    if(typeof v==='boolean') return v;
+    return !['false','0','não','nao','inativo','off','indisponível','indisponivel'].includes(String(v).trim().toLowerCase());
+  }
+  function promoActive(p){
+    if(!bool(p.promocao,false)||!Number(p.preco_promocional||0)) return false;
+    const now=new Date();
+    const a=p.promo_inicio?new Date(p.promo_inicio):null;
+    const b=p.promo_fim?new Date(p.promo_fim):null;
+    return (!a||isNaN(a)||now>=a)&&(!b||isNaN(b)||now<=b);
+  }
+  function decoratePromos(){
+    document.querySelectorAll('.product-card').forEach(card=>{
+      const name=card.querySelector('h3')?.textContent||'';
+      const p=window.state?.products?.find?.(x=>x.nome===name)||state?.products?.find?.(x=>x.nome===name);
+      if(!p||!p.promocao_ativa)return;
+      card.classList.add('is-promo');
+      const media=card.querySelector('.product-media');
+      if(media&&!media.querySelector('.promo-live-badge')){
+        const b=document.createElement('span');b.className='promo-live-badge';b.textContent='🔥 OFERTA DO DIA';media.appendChild(b);
+      }
+      const row=card.querySelector('.price-row'),price=card.querySelector('.price');
+      if(row&&price&&!row.querySelector('.old-price')){
+        const old=document.createElement('del');old.className='old-price';old.textContent=money(p.preco_original);row.insertBefore(old,price);
+      }
+    });
+  }
+  async function syncCatalog(){
+    const cfg=window.APP_CONFIG||{};
+    const endpoint=String(cfg.ORDER_WEBAPP_URL||'').trim();
+    if(!endpoint||typeof state==='undefined'||typeof normalizeProduct!=='function')return;
+    try{
+      const u=new URL(endpoint);u.searchParams.set('action','products');u.searchParams.set('_t',Date.now());
+      const r=await fetch(u.toString(),{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      if(!j.ok||!Array.isArray(j.products))throw new Error(j.error||'Resposta inválida');
+      const all=j.products.map((raw,i)=>{
+        const p=normalizeProduct(raw,i);
+        const normal=Number(raw.preco??raw.price??p.preco)||0;
+        const promo=Number(raw.preco_promocional??raw.preco_promo??0)||0;
+        p.ativo=bool(raw.ativo,true);
+        p.preco_original=normal;
+        p.promocao=bool(raw.promocao,false);
+        p.preco_promocional=promo;
+        p.promo_inicio=raw.promo_inicio||'';
+        p.promo_fim=raw.promo_fim||'';
+        p.promocao_ativa=promoActive(p);
+        p.preco=p.promocao_ativa?promo:normal;
+        return p;
+      });
+      state.products=all.filter(p=>p.ativo);
+      try{localStorage.setItem('opeitica:lastProducts',JSON.stringify(state.products));localStorage.setItem('opeitica:lastSync',new Date().toISOString());}catch(e){}
+      if(typeof syncCartPrices==='function')syncCartPrices();
+      if(typeof buildTabs==='function')buildTabs();
+      if(typeof renderProducts==='function')renderProducts();
+      decoratePromos();
+      if(typeof setSync==='function')setSync('ok','Catálogo atualizado',new Date().toLocaleTimeString('pt-BR'));
+    }catch(e){
+      console.warn('[O Peitica Gestão → Cliente]',e);
+      if(typeof setSync==='function')setSync('error','Catálogo disponível','Tentando sincronizar novamente');
+    }
+  }
+
   document.addEventListener('DOMContentLoaded',()=>{
-    const wa=document.getElementById('whatsappTop');if(wa)wa.innerHTML='<span class="brand-social-icon whatsapp-brand" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="#fff" d="M16 3C9.1 3 3.5 8.4 3.5 15.1c0 2.3.7 4.6 2 6.5L3 29l7.7-2.4c1.7.9 3.5 1.4 5.3 1.4 6.9 0 12.5-5.4 12.5-12.1S22.9 3 16 3zm0 22.8c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-4.5 1.4 1.5-4.2-.3-.4c-1-1.7-1.6-3.7-1.6-5.8 0-5.5 4.6-10 10.2-10s10.2 4.5 10.2 10-4.6 10.5-10.2 10.5zm5.6-7.7c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.9-1.7.1-.2.1-.4 0-.6-.1-.2-.7-1.7-1-2.3-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.3 3.3 1.5 3.5c.2.2 2.5 3.7 6 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.2-.1-.5-.2-.8-.4z"/></svg></span><span>WhatsApp</span>';
-    const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span class="brand-social-icon maps-brand" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M12 2C8.1 2 5 5 5 8.8c0 5.1 7 13.2 7 13.2s7-8.1 7-13.2C19 5 15.9 2 12 2z"/><circle cx="12" cy="8.8" r="2.8" fill="#fff"/><path fill="#34A853" d="M12 22s7-8.1 7-13.2c0-.8-.1-1.5-.4-2.2L12 22z"/><path fill="#FBBC04" d="M5.4 6.5A6.8 6.8 0 0 0 5 8.8c0 2.1 1.2 4.8 2.7 7.2L12 10.5 5.4 6.5z"/><path fill="#EA4335" d="M12 2C9 2 6.5 3.8 5.4 6.5l4.3 3A2.8 2.8 0 0 1 12 6V2z"/></svg></span><span>Como chegar</span>';
-    const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span class="brand-social-icon instagram-brand" aria-hidden="true"><svg viewBox="0 0 24 24"><defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFDC80"/><stop offset=".35" stop-color="#FC3768"/><stop offset=".7" stop-color="#C13584"/><stop offset="1" stop-color="#405DE6"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#fff"/></svg></span><span>Instagram</span>';
-    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=20';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-sync-v20]')){const s=document.createElement('script');s.src='sync-v20.js?v=20';s.dataset.syncV20='1';document.body.appendChild(s)}
-    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=20';l.dataset.clientArea='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=20';s.dataset.clientArea='1';document.body.appendChild(s)}
+    const wa=document.getElementById('whatsappTop');if(wa)wa.innerHTML='<span>🟢</span><span>WhatsApp</span>';
+    const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span>📍</span><span>Como chegar</span>';
+    const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span>📷</span><span>Instagram</span>';
+
+    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=21';l.dataset.liveProducts='1';document.head.appendChild(l)}
+    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=21';l.dataset.clientArea='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=21';s.dataset.clientArea='1';document.body.appendChild(s)}
+
+    setTimeout(syncCatalog,250);
+    setInterval(()=>{if(!document.hidden)syncCatalog()},3000);
+    window.addEventListener('focus',syncCatalog);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncCatalog()});
+    const refresh=document.getElementById('refreshBtn');if(refresh)refresh.addEventListener('click',syncCatalog);
+    window.OPEITICA_SYNC_NOW=syncCatalog;
+
     if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update())).catch(()=>{});}
   });
 })();
