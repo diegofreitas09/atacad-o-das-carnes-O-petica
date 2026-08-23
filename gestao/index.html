@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#991010">
+<meta name="description" content="Painel administrativo do Atacadão da Carne O Peitica">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+<title>O Peitica Gestão</title>
+</head>
+<body>
+<header class="admin-top">
+  <div class="brand"><span class="brand-mark">OP</span><div><strong>O PEITICA GESTÃO</strong><span>Controle do catálogo, pedidos e vendas</span></div></div>
+  <a href="../" target="_blank" rel="noopener">Abrir app do cliente</a>
+</header>
+<main>
+<section class="login-card" id="loginCard"><h1>Acesso administrativo</h1><p>Entre com o PIN administrativo configurado no Google Apps Script.</p><div class="login-row"><input id="pin" type="password" placeholder="PIN administrativo" inputmode="numeric"><button id="enterBtn">Entrar</button></div><small id="loginMsg"></small></section>
+<div id="panel" hidden>
+<section class="toolbar"><div><h1>Painel de comando</h1><p>As alterações salvas aqui são enviadas para a base do app do cliente.</p></div><div class="toolbar-actions"><button id="newProductBtn" class="primary">+ Novo produto</button><button id="syncBtn">↻ Atualizar painel</button><button id="publishSeedsBtn">Enviar catálogo inicial</button></div></section>
+<nav class="admin-tabs"><button class="active" data-tab="prices">Produtos e preços</button><button data-tab="sales">Vendas</button><button data-tab="orders">Pedidos</button></nav>
+<section id="tab-prices" class="tab-panel active"><div class="section-title"><div><h2>Produtos e preços</h2><p>Cadastre, altere preços, promoções e disponibilidade.</p></div><input id="productSearch" placeholder="Buscar produto..."></div><div id="productsTable" class="table-wrap"></div></section>
+<section id="tab-sales" class="tab-panel"><div class="filters"><label>De <input id="fromDate" type="date"></label><label>Até <input id="toDate" type="date"></label><button id="reportBtn">Gerar relatório</button></div><div id="kpis" class="kpi-grid"></div><div class="report-grid"><article><h3>Produtos mais vendidos</h3><div id="topProducts"></div></article><article><h3>Faturamento por bairro</h3><div id="neighborhoods"></div></article></div></section>
+<section id="tab-orders" class="tab-panel"><div class="section-title"><div><h2>Pedidos recebidos</h2><p>Cliente, endereço, rota, valor e andamento.</p></div></div><div id="ordersTable" class="table-wrap"></div></section>
+</div>
+</main>
+<div id="productModal" class="modal" hidden><div class="modal-backdrop" data-close-modal></div><section class="modal-card"><div class="modal-head"><div><small>CADASTRO DE PRODUTO</small><h2 id="modalTitle">Novo produto</h2></div><button data-close-modal>×</button></div><div class="form-grid">
+<label>Nome do produto<input id="pName" placeholder="Ex.: Picanha Bovina"></label><label>Categoria<select id="pCategory"><option>Suíno</option><option>Bovino</option><option>Kits</option><option>Frango</option><option>Outros</option></select></label>
+<label>Preço normal (R$)<input id="pPrice" type="number" step="0.01" min="0"></label><label>Unidade<select id="pUnit"><option value="kg">kg</option><option value="kit">kit</option></select></label>
+<label class="wide">Descrição<textarea id="pDescription" rows="2" placeholder="Descrição do corte ou conteúdo do kit"></textarea></label>
+<label class="switch-row wide"><input id="pActive" type="checkbox" checked><span>Produto disponível no catálogo</span></label>
+<label class="switch-row wide promo-switch"><input id="pPromo" type="checkbox"><span>Promoção do dia</span></label>
+<label>Preço promocional (R$)<input id="pPromoPrice" type="number" step="0.01" min="0"></label><label>Início da promoção<input id="pPromoStart" type="date"></label><label>Fim da promoção<input id="pPromoEnd" type="date"></label>
+<div class="image-box wide"><div><strong>Imagem do produto</strong><p>Use a câmera, escolha uma imagem do aparelho ou cole uma URL da internet.</p></div><img id="pPreview" alt="Prévia da imagem"><div class="image-actions"><label class="file-button camera">📷 Abrir câmera<input id="pCameraFile" type="file" accept="image/*" capture="environment"></label><label class="file-button">🖼 Escolher imagem<input id="pImageFile" type="file" accept="image/*"></label><input id="pImageUrl" placeholder="https://... imagem da internet"><button id="useUrlBtn" type="button">Usar URL</button></div></div>
+</div><div class="modal-actions"><button data-close-modal>Cancelar</button><button id="saveProductBtn" class="primary">Salvar produto</button></div><small id="productMsg"></small></section></div>
+<script src="../data.js"></script><script src="../config.js"></script><script src="app.js"></script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+</body></html>
