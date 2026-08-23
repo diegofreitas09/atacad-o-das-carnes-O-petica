@@ -73,9 +73,11 @@
     const maps=document.getElementById('mapsLink');if(maps)maps.innerHTML='<span>📍</span><span>Como chegar</span>';
     const ig=document.getElementById('instagramLink');if(ig)ig.innerHTML='<span>📷</span><span>Instagram</span>';
 
-    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=21';l.dataset.liveProducts='1';document.head.appendChild(l)}
-    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=21';l.dataset.clientArea='1';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=21';s.dataset.clientArea='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-live-products]')){const l=document.createElement('link');l.rel='stylesheet';l.href='live-products.css?v=22';l.dataset.liveProducts='1';document.head.appendChild(l)}
+    if(!document.querySelector('link[data-client-area]')){const l=document.createElement('link');l.rel='stylesheet';l.href='cliente-area.css?v=22';l.dataset.clientArea='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-client-area]')){const s=document.createElement('script');s.src='cliente-area.js?v=22';s.dataset.clientArea='1';document.body.appendChild(s)}
+    if(!document.querySelector('link[data-promocoes]')){const l=document.createElement('link');l.rel='stylesheet';l.href='promocoes-v22.css?v=22';l.dataset.promocoes='1';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-promocoes]')){const s=document.createElement('script');s.src='promocoes-v22.js?v=22';s.dataset.promocoes='1';document.body.appendChild(s)}
 
     setTimeout(syncCatalog,250);
     setInterval(()=>{if(!document.hidden)syncCatalog()},3000);
