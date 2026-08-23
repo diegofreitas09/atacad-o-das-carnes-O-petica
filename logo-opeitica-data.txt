@@ -1,0 +1,1 @@
+A logo original está incorporada em logo-data.js; este arquivo existe apenas como marcador de migração para asset binário.
