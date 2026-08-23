@@ -1,0 +1,33 @@
+(function(){
+  const oldNormalize=normalizeProduct,oldFetch=fetchFreshProducts,oldRender=renderProducts;
+  function bool(v,def=false){if(v===''||v==null)return def;return !['false','0','não','nao','inativo','off'].includes(String(v).toLowerCase())}
+  function promoActive(p){if(!p.promocao||!Number(p.preco_promocional))return false;const now=new Date(),a=p.promo_inicio?new Date(p.promo_inicio):null,b=p.promo_fim?new Date(p.promo_fim):null;return(!a||isNaN(a)||now>=a)&&(!b||isNaN(b)||now<=b)}
+  normalizeProduct=function(p,i){
+    const base=oldNormalize(p,i),normal=Number(p.preco??p.price??base.preco)||0,promo=Number(p.preco_promocional??p.preco_promo??0)||0;
+    base.preco_original=normal;base.promocao=bool(p.promocao,false);base.preco_promocional=promo;base.promo_inicio=p.promo_inicio||'';base.promo_fim=p.promo_fim||'';base.promocao_ativa=promoActive(base);if(base.promocao_ativa)base.preco=promo;return base;
+  };
+  fetchFreshProducts=async function(){
+    if(cfg.ORDER_WEBAPP_URL){
+      const u=new URL(cfg.ORDER_WEBAPP_URL);u.searchParams.set('action','products');u.searchParams.set('_t',Date.now());
+      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),Number(cfg.DATA_TIMEOUT_MS)||7000);
+      try{const res=await fetch(u,{cache:'no-store',signal:ctrl.signal});if(!res.ok)throw new Error('HTTP '+res.status);const json=await res.json();if(!json.ok||!Array.isArray(json.products))throw new Error(json.error||'empty');const data=json.products.map(normalizeProduct).filter(p=>p.ativo);localStorage.setItem('opeitica:lastProducts',JSON.stringify(data));localStorage.setItem('opeitica:lastSync',new Date().toISOString());return data;}finally{clearTimeout(timer)}
+    }
+    return oldFetch();
+  };
+  renderProducts=function(){
+    oldRender();
+    document.querySelectorAll('.product-card').forEach(card=>{
+      const name=card.querySelector('h3')?.textContent||'',p=state.products.find(x=>x.nome===name);if(!p)return;
+      card.classList.toggle('is-promo',!!p.promocao_ativa);
+      const media=card.querySelector('.product-media');if(p.promocao_ativa&&media&&!media.querySelector('.promo-live-badge')){const b=document.createElement('span');b.className='promo-live-badge';b.textContent='🔥 OFERTA DO DIA';media.appendChild(b)}
+      if(p.promocao_ativa){const row=card.querySelector('.price-row'),price=card.querySelector('.price');if(row&&price&&!row.querySelector('.old-price')){const old=document.createElement('del');old.className='old-price';old.textContent=money(p.preco_original);row.insertBefore(old,price)} }
+      if(!p.ativo){card.classList.add('is-unavailable');const add=card.querySelector('.add-btn');if(add){add.disabled=true;add.textContent='INDISPONÍVEL'}}
+    });
+  };
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>refreshProducts(false),350);
+    setInterval(()=>{if(!document.hidden)refreshProducts(false)},15000);
+    window.addEventListener('focus',()=>refreshProducts(false));
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshProducts(false)});
+  });
+})();
