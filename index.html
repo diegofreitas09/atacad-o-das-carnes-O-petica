@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#9f1010" />
-  <meta name="description" content="Catálogo, ofertas e pedidos do Atacadão da Carne O Peitica" />
-  <link rel="manifest" href="manifest.webmanifest?v=7" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <meta name="description" content="Catálogo, ofertas e orçamentos do Atacadão da Carne O Peitica" />
+  <link rel="manifest" href="manifest.webmanifest?v=8" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <title>O Peitica | Açougue & Delivery</title>
 </head>
 <body>
@@ -17,24 +17,24 @@
 </header>
 <main>
   <section class="store-summary">
-    <div class="store-summary-main"><span class="eyebrow">AÇOUGUE & DELIVERY</span><h1>Seu pedido de carne, sem enrolação.</h1><p>Escolha o corte, informe o peso e finalize direto pelo WhatsApp.</p></div>
-    <div class="store-pills"><span>🏪 Retirada grátis</span><span>🛵 Entrega por bairro</span><span>⚖️ Peso editável</span></div>
+    <div class="store-summary-main"><span class="eyebrow">AÇOUGUE & DELIVERY</span><h1>Seu orçamento de carnes em poucos cliques.</h1><p>Escolha quantos produtos quiser, informe o peso e reúna tudo em uma única cesta.</p></div>
+    <div class="store-pills"><span>🏪 Retirada grátis</span><span>🛵 Entrega por bairro</span><span>⚖️ Peso editável</span><span>📄 PDF completo</span></div>
     <div class="sync-line"><span id="syncDot" class="dot"></span><div><strong id="syncLabel">Carregando preços...</strong><small id="syncTime">Aguarde um instante</small></div></div>
   </section>
   <section class="quick-links"><a id="whatsappTop" class="quick-link whatsapp" target="_blank" rel="noopener">💬 WhatsApp</a><a id="mapsLink" class="quick-link" target="_blank" rel="noopener">📍 Como chegar</a><a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">◎ Instagram</a></section>
   <section class="delivery-preview"><div><strong>Como você quer receber?</strong><small>Escolha agora ou altere depois na cesta.</small></div><div class="delivery-preview-actions"><button type="button" class="preview-choice active" data-preview-fulfillment="retirada">🏪 Retirar</button><button type="button" class="preview-choice" data-preview-fulfillment="entrega">🛵 Entrega</button></div></section>
-  <section class="catalog-toolbar"><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar picanha, patinho, kit..." autocomplete="off" /></div><div id="categoryTabs" class="tabs"></div></section>
+  <section class="catalog-toolbar"><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar carne, corte ou kit..." autocomplete="off" /></div><div id="categoryTabs" class="tabs"></div></section>
   <section class="section-head"><div><span>CATÁLOGO</span><h2>Escolha seus produtos</h2></div><small>Preço por kg ou kit</small></section>
   <section id="productGrid" class="product-grid" aria-live="polite"></section>
 </main>
-<button id="cartFab" class="cart-fab" type="button"><span class="cart-icon">🛒</span><span class="cart-copy"><strong>Ver cesta</strong><small id="cartFabSummary">Seu pedido está vazio</small></span><span class="cart-fab-total">R$ 0,00</span><b id="cartCount">0</b></button>
+<button id="cartFab" class="cart-fab" type="button"><span class="cart-icon">🛒</span><span class="cart-copy"><strong>Orçamento geral</strong><small id="cartFabSummary">Seu orçamento está vazio</small></span><span class="cart-fab-total">R$ 0,00</span><b id="cartCount">0</b></button>
 <div id="cartSheet" class="sheet" aria-hidden="true">
   <div class="sheet-backdrop" data-close-cart></div>
   <section class="sheet-panel">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><div><small>SEU ORÇAMENTO</small><h2>Minha cesta</h2></div><button type="button" class="close-btn" data-close-cart>×</button></div>
+    <div class="sheet-head"><div><small>SEU ORÇAMENTO</small><h2>Todos os itens selecionados</h2></div><button type="button" class="close-btn" data-close-cart>×</button></div>
     <div id="cartItems" class="cart-items"></div>
-    <section class="checkout-card"><h3>1. Seus dados</h3><div class="form-grid"><label>Nome<input id="customerName" placeholder="Nome do cliente *" autocomplete="name" /></label><label>WhatsApp<input id="customerPhone" placeholder="(85) 99999-9999 *" inputmode="tel" autocomplete="tel" /></label></div></section>
+    <section class="checkout-card"><h3>1. Seus dados — preencha uma única vez</h3><div class="form-grid"><label>Nome<input id="customerName" placeholder="Nome do cliente *" autocomplete="name" /></label><label>WhatsApp<input id="customerPhone" placeholder="(85) 99999-9999 *" inputmode="tel" autocomplete="tel" /></label></div></section>
     <section class="checkout-card">
       <h3>2. Como deseja receber?</h3>
       <div class="fulfillment fulfillment-buttons">
@@ -48,17 +48,17 @@
     <div class="totals"><div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div><div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div><div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div></div>
     <div class="checkout-actions">
       <button id="saveBudgetBtn" type="button" class="btn primary">💾 SALVAR SEU ORÇAMENTO</button>
-      <button id="forwardBudgetBtn" type="button" class="btn share">📤 ENCAMINHAR ORÇAMENTO</button>
+      <button id="forwardBudgetBtn" type="button" class="btn share">📤 ENCAMINHAR ORÇAMENTO EM PDF</button>
       <button id="sendBtn" type="button" class="btn secondary">💬 ENVIAR PEDIDO NO WHATSAPP</button>
-      <button id="pdfBtn" type="button" class="btn ghost">📄 Baixar orçamento em PDF</button>
+      <button id="pdfBtn" type="button" class="btn ghost">📄 BAIXAR ORÇAMENTO EM PDF</button>
     </div>
-    <p class="checkout-note">O PDF leva todos os produtos da cesta, quantidades, observações, dados do cliente, entrega/retirada, endereço, localização e total.</p>
+    <p class="checkout-note">O PDF reúne todos os produtos da cesta, tipo da carne, quantidades, valores, observações, cliente, entrega/retirada, endereço, localização e total.</p>
   </section>
 </div>
 <template id="productTemplate">
   <article class="product-card"><div class="product-media"><img class="product-image" alt="" loading="lazy" /><div class="product-placeholder">🥩</div><span class="category-badge"></span></div><div class="product-body"><h3></h3><p class="description"></p><div class="price-row"><strong class="price"></strong><small class="unit-label"></small></div><div class="product-helper">Quanto você quer?</div><div class="weight-controls"><button type="button" data-weight="250">250g</button><button type="button" data-weight="500">500g</button><button type="button" data-weight="1000" class="active">1kg</button><input class="custom-weight" type="number" min="1" step="1" placeholder="Outro g" inputmode="numeric" /></div><div class="live-calc">1 kg = <strong>R$ 0,00</strong></div><details class="note-wrap"><summary>+ Observação do corte</summary><textarea class="note" rows="2" placeholder="Ex.: cortar fino, separar em 2 pacotes..."></textarea></details><button class="add-btn" type="button">+ ADICIONAR À CESTA</button></div></article>
 </template>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="config.js?v=7"></script><script src="data.js?v=7"></script><script src="app.js?v=7"></script><script src="order-save.js?v=7"></script>
+<script src="config.js?v=8"></script><script src="data.js?v=8"></script><script src="app.js?v=8"></script><script src="order-save.js?v=8"></script>
 </body>
 </html>
