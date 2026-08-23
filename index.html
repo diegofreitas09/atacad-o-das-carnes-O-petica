@@ -5,108 +5,55 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#9f1010" />
   <meta name="description" content="Catálogo, ofertas e pedidos do Atacadão da Carne O Peitica" />
-  <link rel="manifest" href="manifest.webmanifest?v=5" />
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="manifest" href="manifest.webmanifest?v=6" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <title>O Peitica | Açougue & Delivery</title>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-mark" aria-label="O Peitica"><div class="brand-ring">ATACADÃO DA CARNE</div><div class="brand-cow">🐂</div><div class="brand-ribbon">O PEITICA</div></div>
-    <div class="brand-copy"><strong>Atacadão da Carne O Peitica</strong><span>Rua Edison Martins, 530 • Fortaleza</span></div>
-    <button id="refreshBtn" class="icon-btn" type="button" title="Atualizar preços" aria-label="Atualizar preços">↻</button>
-  </header>
-
-  <main>
-    <section class="store-summary">
-      <div class="store-summary-main">
-        <span class="eyebrow">AÇOUGUE & DELIVERY</span>
-        <h1>Seu pedido de carne, sem enrolação.</h1>
-        <p>Escolha o corte, informe o peso e finalize direto pelo WhatsApp.</p>
+<header class="topbar">
+  <div class="brand-mark"><div class="brand-ring">ATACADÃO DA CARNE</div><div class="brand-cow">🐂</div><div class="brand-ribbon">O PEITICA</div></div>
+  <div class="brand-copy"><strong>Atacadão da Carne O Peitica</strong><span>Rua Edison Martins, 530 • Fortaleza</span></div>
+  <button id="refreshBtn" class="icon-btn" type="button" aria-label="Atualizar preços">↻</button>
+</header>
+<main>
+  <section class="store-summary">
+    <div class="store-summary-main"><span class="eyebrow">AÇOUGUE & DELIVERY</span><h1>Seu pedido de carne, sem enrolação.</h1><p>Escolha o corte, informe o peso e finalize direto pelo WhatsApp.</p></div>
+    <div class="store-pills"><span>🏪 Retirada grátis</span><span>🛵 Entrega por bairro</span><span>⚖️ Peso editável</span></div>
+    <div class="sync-line"><span id="syncDot" class="dot"></span><div><strong id="syncLabel">Carregando preços...</strong><small id="syncTime">Aguarde um instante</small></div></div>
+  </section>
+  <section class="quick-links"><a id="whatsappTop" class="quick-link whatsapp" target="_blank" rel="noopener">💬 WhatsApp</a><a id="mapsLink" class="quick-link" target="_blank" rel="noopener">📍 Como chegar</a><a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">◎ Instagram</a></section>
+  <section class="delivery-preview"><div><strong>Como você quer receber?</strong><small>Escolha agora ou altere depois na cesta.</small></div><div class="delivery-preview-actions"><button type="button" class="preview-choice active" data-preview-fulfillment="retirada">🏪 Retirar</button><button type="button" class="preview-choice" data-preview-fulfillment="entrega">🛵 Entrega</button></div></section>
+  <section class="catalog-toolbar"><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar picanha, patinho, kit..." autocomplete="off" /></div><div id="categoryTabs" class="tabs"></div></section>
+  <section class="section-head"><div><span>CATÁLOGO</span><h2>Escolha seus produtos</h2></div><small>Preço por kg ou kit</small></section>
+  <section id="productGrid" class="product-grid" aria-live="polite"></section>
+</main>
+<button id="cartFab" class="cart-fab" type="button"><span class="cart-icon">🛒</span><span class="cart-copy"><strong>Ver cesta</strong><small id="cartFabSummary">Seu pedido está vazio</small></span><span class="cart-fab-total">R$ 0,00</span><b id="cartCount">0</b></button>
+<div id="cartSheet" class="sheet" aria-hidden="true">
+  <div class="sheet-backdrop" data-close-cart></div>
+  <section class="sheet-panel">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><small>SEU PEDIDO</small><h2>Minha cesta</h2></div><button type="button" class="close-btn" data-close-cart>×</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <section class="checkout-card"><h3>1. Seus dados</h3><div class="form-grid"><label>Nome<input id="customerName" placeholder="Nome do cliente *" autocomplete="name" /></label><label>WhatsApp<input id="customerPhone" placeholder="(85) 99999-9999 *" inputmode="tel" autocomplete="tel" /></label></div></section>
+    <section class="checkout-card">
+      <h3>2. Como deseja receber?</h3>
+      <div class="fulfillment fulfillment-buttons">
+        <button type="button" class="fulfillment-choice active" data-fulfillment-choice="retirada">🏪 <span><b>Retirar na loja</b><small>Rua Edison Martins, 530 • grátis</small></span></button>
+        <button type="button" class="fulfillment-choice" data-fulfillment-choice="entrega">🛵 <span><b>Receber em casa</b><small>Taxa conforme o bairro</small></span></button>
       </div>
-      <div class="store-pills"><span>🏪 Retirada grátis</span><span>🛵 Entrega por bairro</span><span>⚖️ Peso editável</span></div>
-      <div class="sync-line"><span id="syncDot" class="dot"></span><div><strong id="syncLabel">Carregando preços...</strong><small id="syncTime">Aguarde um instante</small></div></div>
+      <input type="radio" name="fulfillment" value="retirada" checked hidden />
+      <input type="radio" name="fulfillment" value="entrega" hidden />
+      <div id="deliveryFields" class="delivery-fields is-hidden"><label>Bairro<select id="deliveryArea"><option value="">Selecione o bairro da entrega *</option></select></label><label>Endereço<input id="customerAddress" placeholder="Rua, número e complemento *" autocomplete="street-address" /></label><label>Referência<input id="customerReference" placeholder="Ponto de referência (opcional)" /></label><button id="locationBtn" type="button" class="location-btn">📍 Adicionar minha localização</button><small id="locationStatus" class="location-status">A localização vai junto no pedido para ajudar o entregador.</small></div>
     </section>
-
-    <section class="quick-links">
-      <a id="whatsappTop" class="quick-link whatsapp" target="_blank" rel="noopener">💬 WhatsApp</a>
-      <a id="mapsLink" class="quick-link" target="_blank" rel="noopener">📍 Como chegar</a>
-      <a id="instagramLink" class="quick-link is-disabled" target="_blank" rel="noopener">◎ Instagram</a>
-    </section>
-
-    <section class="delivery-preview">
-      <div><strong>Como você quer receber?</strong><small>Você pode mudar isso na cesta.</small></div>
-      <div class="delivery-preview-actions"><button type="button" class="preview-choice active" data-preview-fulfillment="retirada">🏪 Retirar</button><button type="button" class="preview-choice" data-preview-fulfillment="entrega">🛵 Entrega</button></div>
-    </section>
-
-    <section class="catalog-toolbar">
-      <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar picanha, patinho, kit..." autocomplete="off" /></div>
-      <div id="categoryTabs" class="tabs"></div>
-    </section>
-
-    <section class="section-head"><div><span>CATÁLOGO</span><h2>Escolha seus produtos</h2></div><small>Preço por kg ou kit</small></section>
-    <section id="productGrid" class="product-grid" aria-live="polite"></section>
-  </main>
-
-  <button id="cartFab" class="cart-fab" type="button" aria-label="Abrir cesta">
-    <span class="cart-icon">🛒</span><span class="cart-copy"><strong>Ver cesta</strong><small id="cartFabSummary">Seu pedido está vazio</small></span><span class="cart-fab-total">R$ 0,00</span><b id="cartCount">0</b>
-  </button>
-
-  <div id="cartSheet" class="sheet" aria-hidden="true">
-    <div class="sheet-backdrop" data-close-cart></div>
-    <section class="sheet-panel">
-      <div class="sheet-handle"></div>
-      <div class="sheet-head"><div><small>SEU PEDIDO</small><h2>Minha cesta</h2></div><button type="button" class="close-btn" data-close-cart>×</button></div>
-      <div id="cartItems" class="cart-items"></div>
-
-      <section class="checkout-card">
-        <h3>1. Seus dados</h3>
-        <div class="form-grid">
-          <label>Nome<input id="customerName" placeholder="Nome do cliente *" autocomplete="name" /></label>
-          <label>WhatsApp<input id="customerPhone" placeholder="(85) 99999-9999 *" inputmode="tel" autocomplete="tel" /></label>
-        </div>
-      </section>
-
-      <section class="checkout-card">
-        <h3>2. Como deseja receber?</h3>
-        <div class="fulfillment">
-          <label><input type="radio" name="fulfillment" value="retirada" checked /> <span>🏪 <b>Retirar na loja</b><small>Rua Edison Martins, 530 • grátis</small></span></label>
-          <label><input type="radio" name="fulfillment" value="entrega" /> <span>🛵 <b>Receber em casa</b><small>Taxa conforme o bairro</small></span></label>
-        </div>
-        <div id="deliveryFields" class="delivery-fields is-hidden">
-          <label>Bairro<select id="deliveryArea"><option value="">Selecione o bairro da entrega *</option></select></label>
-          <label>Endereço<input id="customerAddress" placeholder="Rua, número e complemento *" autocomplete="street-address" /></label>
-          <label>Referência<input id="customerReference" placeholder="Ponto de referência (opcional)" /></label>
-          <button id="locationBtn" type="button" class="location-btn">📍 Adicionar minha localização</button>
-          <small id="locationStatus" class="location-status">A localização vai junto no pedido para ajudar o entregador.</small>
-        </div>
-      </section>
-
-      <div class="totals"><div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div><div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div><div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div></div>
-
-      <div class="checkout-actions">
-        <button id="sendBtn" type="button" class="btn primary">💬 FINALIZAR NO WHATSAPP</button>
-        <button id="pdfBtn" type="button" class="btn secondary">📄 Baixar orçamento em PDF</button>
-        <button id="sharePdfBtn" type="button" class="btn ghost">📤 Compartilhar PDF</button>
-      </div>
-      <p class="checkout-note">O pedido só é confirmado após o atendimento pelo WhatsApp.</p>
-    </section>
-  </div>
-
-  <template id="productTemplate">
-    <article class="product-card">
-      <div class="product-media"><img class="product-image" alt="" loading="lazy" /><div class="product-placeholder">🥩</div><span class="category-badge"></span></div>
-      <div class="product-body">
-        <h3></h3><p class="description"></p><div class="price-row"><strong class="price"></strong><small class="unit-label"></small></div>
-        <div class="product-helper">Quanto você quer?</div>
-        <div class="weight-controls"><button type="button" data-weight="250">250g</button><button type="button" data-weight="500">500g</button><button type="button" data-weight="1000" class="active">1kg</button><input class="custom-weight" type="number" min="1" step="1" placeholder="Outro g" inputmode="numeric" /></div>
-        <div class="live-calc">1 kg = <strong class="live-total">R$ 0,00</strong></div>
-        <details class="note-wrap"><summary>+ Observação do corte</summary><textarea class="note" rows="2" placeholder="Ex.: cortar fino, separar em 2 pacotes..."></textarea></details>
-        <button class="add-btn" type="button">Adicionar à cesta</button>
-      </div>
-    </article>
-  </template>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="config.js?v=5"></script><script src="data.js?v=5"></script><script src="app.js?v=5"></script>
+    <div class="totals"><div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div><div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div><div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div></div>
+    <div class="checkout-actions"><button id="sendBtn" type="button" class="btn primary">💬 FINALIZAR NO WHATSAPP</button><button id="whatsappPdfBtn" type="button" class="btn share">📤 ENCAMINHAR ORÇAMENTO PARA WHATSAPP</button><button id="pdfBtn" type="button" class="btn secondary">📄 Baixar orçamento em PDF</button><button id="sharePdfBtn" type="button" class="btn ghost">↗ Compartilhar PDF</button></div>
+    <p class="checkout-note">O pedido só é confirmado após o atendimento pelo WhatsApp.</p>
+  </section>
+</div>
+<template id="productTemplate">
+  <article class="product-card"><div class="product-media"><img class="product-image" alt="" loading="lazy" /><div class="product-placeholder">🥩</div><span class="category-badge"></span></div><div class="product-body"><h3></h3><p class="description"></p><div class="price-row"><strong class="price"></strong><small class="unit-label"></small></div><div class="product-helper">Quanto você quer?</div><div class="weight-controls"><button type="button" data-weight="250">250g</button><button type="button" data-weight="500">500g</button><button type="button" data-weight="1000" class="active">1kg</button><input class="custom-weight" type="number" min="1" step="1" placeholder="Outro g" inputmode="numeric" /></div><div class="live-calc">1 kg = <strong>R$ 0,00</strong></div><details class="note-wrap"><summary>+ Observação do corte</summary><textarea class="note" rows="2" placeholder="Ex.: cortar fino, separar em 2 pacotes..."></textarea></details><button class="add-btn" type="button">+ ADICIONAR À CESTA</button></div></article>
+</template>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="config.js?v=6"></script><script src="data.js?v=6"></script><script src="app.js?v=6"></script>
 </body>
 </html>
