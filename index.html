@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.webmanifest?v=10" />
   <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="custom-v10.css?v=10" />
   <title>O Peitica | Açougue & Delivery</title>
 </head>
 <body>
@@ -49,9 +50,7 @@
       <div id="deliveryFields" class="delivery-fields is-hidden"><label>Bairro<select id="deliveryArea"><option value="">Selecione o bairro da entrega *</option></select></label><label>Endereço<input id="customerAddress" placeholder="Rua, número e complemento *" autocomplete="street-address" /></label><label>Referência<input id="customerReference" placeholder="Ponto de referência (opcional)" /></label><button id="locationBtn" type="button" class="location-btn">📍 Adicionar minha localização</button><small id="locationStatus" class="location-status">A localização vai junto no orçamento para ajudar o entregador.</small></div>
     </section>
     <div class="totals"><div><span>Produtos</span><strong id="subtotal">R$ 0,00</strong></div><div id="deliveryRow" class="is-hidden"><span>Entrega</span><strong id="deliveryFee">R$ 0,00</strong></div><div class="grand"><span>Total</span><strong id="grandTotal">R$ 0,00</strong></div></div>
-    <div class="checkout-actions single-action">
-      <button id="finalizeBudgetBtn" type="button" class="btn primary finalize-budget">✅ SALVAR E ENCAMINHAR ORÇAMENTO</button>
-    </div>
+    <div class="checkout-actions single-action"><button id="finalizeBudgetBtn" type="button" class="btn primary finalize-budget">✅ SALVAR E ENCAMINHAR ORÇAMENTO</button></div>
     <p class="checkout-note">Em um único toque o orçamento é salvo, gera o PDF com a logo e abre o WhatsApp com cliente, itens, endereço e link da localização da entrega.</p>
   </section>
 </div>
