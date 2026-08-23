@@ -1,5 +1,5 @@
-const STATIC_CACHE='opeitica-shell-v6';
-const STATIC_ASSETS=['./','./index.html','./styles.css?v=6','./app.js?v=6','./config.js?v=6','./data.js?v=6','./manifest.webmanifest?v=6','./icon.svg'];
+const STATIC_CACHE='opeitica-shell-v7';
+const STATIC_ASSETS=['./','./index.html','./styles.css?v=7','./app.js?v=7','./order-save.js?v=7','./config.js?v=7','./data.js?v=7','./manifest.webmanifest?v=7','./icon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(STATIC_CACHE).then(cache=>cache.addAll(STATIC_ASSETS)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==STATIC_CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
 self.addEventListener('fetch',event=>{const req=event.request;if(req.method!=='GET')return;const url=new URL(req.url);if(url.hostname.includes('google.com')||url.hostname.includes('googleusercontent.com')||url.searchParams.has('_t')){event.respondWith(fetch(req,{cache:'no-store'}));return}if(req.mode==='navigate'){event.respondWith(fetch(req,{cache:'no-cache'}).then(res=>{const copy=res.clone();caches.open(STATIC_CACHE).then(c=>c.put('./index.html',copy));return res}).catch(()=>caches.match('./index.html')));return}event.respondWith(fetch(req,{cache:'no-cache'}).then(res=>{if(res.ok)caches.open(STATIC_CACHE).then(c=>c.put(req,res.clone()));return res}).catch(()=>caches.match(req))) });
