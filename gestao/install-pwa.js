@@ -8,8 +8,9 @@
   const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
   const isAndroid=()=>/android/i.test(navigator.userAgent);
 
-  function openInBrowserForInstall(){
-    const clean=location.origin+location.pathname+'?install=gestao';
+  function installPageUrl(){return location.origin+location.pathname.replace(/[^/]*$/,'')+'instalar.html?v=10'}
+  function openInstallPage(){
+    const clean=installPageUrl();
     if(isAndroid()){
       const noScheme=clean.replace(/^https?:\/\//,'');
       location.href='intent://'+noScheme+'#Intent;scheme=https;package=com.android.chrome;end';
@@ -30,17 +31,15 @@
 
   async function install(){
     if(isGestaoStandalone())return;
-    if(isInsideClientApp()){openInBrowserForInstall();return;}
+    if(isInsideClientApp()){openInstallPage();return;}
     if(deferredPrompt){deferredPrompt.prompt();try{await deferredPrompt.userChoice}catch(e){}deferredPrompt=null;document.getElementById('installAppBanner')?.classList.remove('show');return;}
-    if(isIOS())alert('No iPhone/iPad: abra esta página no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”. O nome será “Peitica Gestão”.');
-    else if(isAndroid())alert('No Chrome, toque no menu ⋮ e escolha “Instalar app”. Ele será instalado separado como “Peitica Gestão”.');
-    else alert('No Chrome ou Edge, use a opção “Instalar aplicativo”.');
+    openInstallPage();
   }
 
   function refreshUi(){
     ensureUi();const btn=document.getElementById('installAppBtn'),status=document.getElementById('installAppStatus'),banner=document.getElementById('installAppBanner'),help=document.getElementById('installHelpText');
     if(isGestaoStandalone()){status?.classList.add('show');btn?.classList.remove('show');banner?.classList.remove('show');return;}
-    status?.classList.remove('show');btn?.classList.add('show');if(isInsideClientApp()&&help)help.textContent='Você abriu a Gestão dentro do app do cliente. Toque em instalar para abrir no Chrome e criar o app “Peitica Gestão” separado.';if(!sessionStorage.getItem('opeitica_gestao_install_later'))banner?.classList.add('show');
+    status?.classList.remove('show');btn?.classList.add('show');if(help)help.textContent=isInsideClientApp()?'Você abriu a Gestão dentro do app do cliente. Toque em instalar para abrir a tela própria de instalação no Chrome.':'Toque em instalar para criar o aplicativo “Peitica Gestão” separado.';if(!sessionStorage.getItem('opeitica_gestao_install_later'))banner?.classList.add('show');
   }
 
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;refreshUi()});
