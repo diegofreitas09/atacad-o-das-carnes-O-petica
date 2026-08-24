@@ -10,3 +10,32 @@ window.APP_CONFIG = {
   DELIVERY_FEE: 0,
   DATA_TIMEOUT_MS: 7000
 };
+
+/* Auditoria funcional 2026-08-23
+   1) preserva a cesta durante a inicialização;
+   2) reduz a sincronização automática de 3s para 30s;
+   3) devolve os métodos nativos logo após o carregamento. */
+(function(){
+  const CART_KEY='opeitica:carrinho-v1';
+  const originalRemoveItem=Storage.prototype.removeItem;
+  const originalSetInterval=window.setInterval;
+  let booting=true;
+
+  Storage.prototype.removeItem=function(key){
+    if(booting && key===CART_KEY) return;
+    return originalRemoveItem.call(this,key);
+  };
+
+  window.setInterval=function(fn,delay,...args){
+    const adjusted=Number(delay)===3000 ? 30000 : delay;
+    return originalSetInterval.call(window,fn,adjusted,...args);
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>{
+      booting=false;
+      Storage.prototype.removeItem=originalRemoveItem;
+      window.setInterval=originalSetInterval;
+    },0);
+  },{once:true});
+})();
