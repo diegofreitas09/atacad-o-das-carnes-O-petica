@@ -121,7 +121,16 @@
     if(hint)hint.textContent='O aplicativo foi instalado com sucesso.';
   });
 
+  function loadLiveSync(){
+    if(document.querySelector('script[data-live-products]'))return;
+    const s=document.createElement('script');
+    s.src='live-products.js?v=37';
+    s.dataset.liveProducts='1';
+    document.body.appendChild(s);
+  }
+
   injectMeta();
   registerServiceWorker();
+  loadLiveSync();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',createUI);else createUI();
 })();
