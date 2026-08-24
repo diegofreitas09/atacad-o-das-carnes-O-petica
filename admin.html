@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#991010">
-<title>Painel O Peitica</title><link rel="stylesheet" href="admin.css"><script src="data.js"></script><script src="config.js"></script></head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#991010">
+<meta name="description" content="Gestão do Atacadão da Carne O Peitica">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="O Peitica Gestão">
+<link rel="manifest" href="manifest.webmanifest?v=31"><link rel="apple-touch-icon" href="icon.svg?v=31">
+<title>Painel O Peitica</title><link rel="stylesheet" href="admin.css?v=31"><link rel="stylesheet" href="pwa-install.css?v=31"><script src="data.js"></script><script src="config.js"></script></head>
 <body>
-<header class="admin-top"><div><strong>O PEITICA • PAINEL DE COMANDO</strong><span>Preços, promoções, disponibilidade, pedidos e vendas</span></div><a href="./" target="_blank">Abrir app do cliente</a></header>
+<header class="admin-top"><div><strong>O PEITICA GESTÃO</strong><span>Controle do catálogo, clientes, pedidos e vendas</span></div><a href="./" target="_blank">Abrir app do cliente</a></header>
 <main>
-<section class="login-card" id="loginCard"><h1>Acesso administrativo</h1><p>Digite o PIN configurado no Google Apps Script.</p><div class="login-row"><input id="pin" type="password" placeholder="PIN administrativo"><button id="enterBtn">Entrar</button></div><small id="loginMsg"></small></section>
+<section class="login-card" id="loginCard"><h1>Acesso administrativo</h1><p>Entre com o PIN administrativo configurado no Google Apps Script.</p><div class="login-row"><input id="pin" type="password" placeholder="PIN administrativo"><button id="enterBtn">Entrar</button></div><small id="loginMsg"></small></section>
 <div id="panel" hidden>
 <section class="toolbar"><div><h1>Painel de comando</h1><p>Preço, promoção e disponibilidade atualizam o catálogo do cliente automaticamente.</p></div><div class="toolbar-actions"><button id="newProductBtn" class="primary">+ Novo produto</button><button id="syncBtn">↻ Atualizar painel</button><button id="publishSeedsBtn">Enviar catálogo inicial</button></div></section>
 <nav class="admin-tabs"><button class="active" data-tab="prices">Produtos e preços</button><button data-tab="sales">Vendas</button><button data-tab="orders">Pedidos</button></nav>
@@ -24,4 +27,4 @@
 <label>Preço promocional (R$)<input id="pPromoPrice" type="number" step="0.01" min="0"></label><label>Início da promoção<input id="pPromoStart" type="date"></label><label>Fim da promoção<input id="pPromoEnd" type="date"></label>
 <div class="image-box wide"><div><strong>Imagem do produto</strong><p>Escolha como deseja adicionar: câmera, galeria/arquivo do aparelho ou URL da internet.</p></div><img id="pPreview" alt="Prévia da imagem"><div class="image-actions"><label class="file-button">📷 Abrir câmera<input id="pCameraFile" type="file" accept="image/*" capture="environment"></label><label class="file-button">🖼️ Galeria / dispositivo<input id="pImageFile" type="file" accept="image/*"></label><input id="pImageUrl" placeholder="https://... imagem da internet"><button id="useUrlBtn" type="button">Usar URL</button></div></div>
 </div><div class="modal-actions"><button data-close-modal>Cancelar</button><button id="saveProductBtn" class="primary">Salvar produto</button></div><small id="productMsg"></small></section></div>
-<script src="admin.js"></script></body></html>
+<script src="admin.js?v=31"></script><script src="pwa-install.js?v=31"></script></body></html>
