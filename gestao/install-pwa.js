@@ -8,15 +8,18 @@
   const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
   const isAndroid=()=>/android/i.test(navigator.userAgent);
 
-  function installPageUrl(){return location.origin+location.pathname.replace(/[^/]*$/,'')+'instalar.html?v=10'}
-  function openInstallPage(){
-    const clean=installPageUrl();
+  function chromeIntent(url){
+    const noScheme=url.replace(/^https?:\/\//,'');
+    return 'intent://'+noScheme+'#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url='+encodeURIComponent(url)+';end';
+  }
+
+  function openInstallerInBrowser(){
+    const target=location.origin+location.pathname.replace(/index\.html$/,'').replace(/\/$/,'/')+'instalar.html?browser=1&_t='+Date.now();
     if(isAndroid()){
-      const noScheme=clean.replace(/^https?:\/\//,'');
-      location.href='intent://'+noScheme+'#Intent;scheme=https;package=com.android.chrome;end';
+      location.href=chromeIntent(target);
       return;
     }
-    window.open(clean,'_blank','noopener');
+    window.open(target,'_blank','noopener');
   }
 
   function ensureUi(){
@@ -31,15 +34,15 @@
 
   async function install(){
     if(isGestaoStandalone())return;
-    if(isInsideClientApp()){openInstallPage();return;}
+    if(isInsideClientApp()){openInstallerInBrowser();return;}
     if(deferredPrompt){deferredPrompt.prompt();try{await deferredPrompt.userChoice}catch(e){}deferredPrompt=null;document.getElementById('installAppBanner')?.classList.remove('show');return;}
-    openInstallPage();
+    openInstallerInBrowser();
   }
 
   function refreshUi(){
     ensureUi();const btn=document.getElementById('installAppBtn'),status=document.getElementById('installAppStatus'),banner=document.getElementById('installAppBanner'),help=document.getElementById('installHelpText');
     if(isGestaoStandalone()){status?.classList.add('show');btn?.classList.remove('show');banner?.classList.remove('show');return;}
-    status?.classList.remove('show');btn?.classList.add('show');if(help)help.textContent=isInsideClientApp()?'Você abriu a Gestão dentro do app do cliente. Toque em instalar para abrir a tela própria de instalação no Chrome.':'Toque em instalar para criar o aplicativo “Peitica Gestão” separado.';if(!sessionStorage.getItem('opeitica_gestao_install_later'))banner?.classList.add('show');
+    status?.classList.remove('show');btn?.classList.add('show');if(isInsideClientApp()&&help)help.textContent='Você abriu a Gestão dentro do app do cliente. Toque em instalar: vamos abrir o Chrome e criar o app “Peitica Gestão” separado.';if(!sessionStorage.getItem('opeitica_gestao_install_later'))banner?.classList.add('show');
   }
 
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;refreshUi()});
