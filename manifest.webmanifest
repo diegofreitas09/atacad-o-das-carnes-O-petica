@@ -1,18 +1,36 @@
 {
+  "id": "./",
   "name": "Atacadão da Carne O Peitica",
   "short_name": "O Peitica",
-  "start_url": "./",
+  "description": "Catálogo, orçamentos e pedidos do Atacadão da Carne O Peitica.",
+  "lang": "pt-BR",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#b00000",
-  "description": "Catálogo com preços atualizados e pedidos pelo WhatsApp.",
+  "theme_color": "#9f1010",
+  "categories": ["shopping", "food", "business"],
   "icons": [
     {
       "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Abrir catálogo",
+      "short_name": "Catálogo",
+      "url": "./?source=shortcut"
     }
   ]
 }
