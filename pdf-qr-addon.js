@@ -8,6 +8,9 @@
     jsPDF.API.output=function(){
       try{
         if(!this.__opeiticaQrAdded){
+          if(window.OPEITICA_LOGO_DATA){
+            try{this.addImage(window.OPEITICA_LOGO_DATA,'JPEG',176,3,17,17,undefined,'FAST');}catch(e){console.warn('Logo PDF:',e);}
+          }
           this.addImage(QR_DATA,'PNG',166,55,24,24,undefined,'FAST');
           this.setTextColor(45,45,45);
           this.setFont('helvetica','bold');
@@ -16,7 +19,7 @@
           this.text('CONOSCO NO WHATSAPP',178,86,{align:'center'});
           this.__opeiticaQrAdded=true;
         }
-      }catch(e){console.warn('QR PDF:',e);}
+      }catch(e){console.warn('Complementos PDF:',e);}
       return original.apply(this,arguments);
     };
     jsPDF.API.__opeiticaQrPatched=true;
