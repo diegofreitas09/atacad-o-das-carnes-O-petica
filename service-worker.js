@@ -1,4 +1,4 @@
-const CACHE_NAME='o-peitica-pwa-v35';
+const CACHE_NAME='o-peitica-pwa-v36';
 const APP_SHELL=[
   './',
   './index.html',
@@ -13,6 +13,7 @@ const APP_SHELL=[
   './admin.js',
   './pwa-install.js',
   './live-products.js',
+  './catalog-guard.js',
   './icon.svg',
   './manifest.webmanifest'
 ];
@@ -31,7 +32,7 @@ self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
-  if(url.pathname.endsWith('/live-products.js')||url.pathname.endsWith('/cliente-area.js')||url.pathname.endsWith('/cliente-area.css')||url.pathname.endsWith('/order-save.js')||url.searchParams.has('_t')){
+  if(url.pathname.endsWith('/live-products.js')||url.pathname.endsWith('/catalog-guard.js')||url.pathname.endsWith('/pwa-install.js')||url.pathname.endsWith('/cliente-area.js')||url.pathname.endsWith('/cliente-area.css')||url.pathname.endsWith('/order-save.js')||url.searchParams.has('_t')||url.searchParams.has('_guard')){
     event.respondWith(fetch(event.request,{cache:'no-store'}).catch(()=>caches.match(event.request)));
     return;
   }
