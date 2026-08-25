@@ -1,4 +1,4 @@
-const CACHE_NAME='o-peitica-pwa-v32';
+const CACHE_NAME='o-peitica-pwa-v33';
 const APP_SHELL=[
   './',
   './index.html',
