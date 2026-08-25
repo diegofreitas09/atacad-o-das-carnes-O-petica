@@ -15,7 +15,7 @@
   async function registerServiceWorker(){
     if(!('serviceWorker' in navigator))return;
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=31',{scope:'./'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=36',{scope:'./'});
       registration.update().catch(()=>{});
     }catch(err){
       console.warn('Falha ao registrar o aplicativo para instalação:',err);
@@ -28,7 +28,7 @@
       ['meta',{name:'apple-mobile-web-app-capable',content:'yes'}],
       ['meta',{name:'apple-mobile-web-app-status-bar-style',content:'black-translucent'}],
       ['meta',{name:'apple-mobile-web-app-title',content:'O Peitica'}],
-      ['link',{rel:'apple-touch-icon',href:'icon.svg?v=31'}]
+      ['link',{rel:'apple-touch-icon',href:'icon.svg?v=36'}]
     ];
     metas.forEach(([tag,attrs])=>{
       const selector=tag==='meta'?`meta[name="${attrs.name}"]`:`link[rel="${attrs.rel}"]`;
@@ -124,13 +124,22 @@
   function loadLiveSync(){
     if(document.querySelector('script[data-live-products]'))return;
     const s=document.createElement('script');
-    s.src='live-products.js?v=37';
+    s.src='live-products.js?v=38';
     s.dataset.liveProducts='1';
+    document.body.appendChild(s);
+  }
+
+  function loadCatalogGuard(){
+    if(document.querySelector('script[data-catalog-guard]'))return;
+    const s=document.createElement('script');
+    s.src='catalog-guard.js?v=36';
+    s.dataset.catalogGuard='1';
     document.body.appendChild(s);
   }
 
   injectMeta();
   registerServiceWorker();
   loadLiveSync();
+  loadCatalogGuard();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',createUI);else createUI();
 })();
